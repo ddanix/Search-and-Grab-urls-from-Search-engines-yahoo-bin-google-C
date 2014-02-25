@@ -1,8 +1,6 @@
-dummy_url_parse
-===============
+dummy_grab_results and parse urls to log file in c lang
 
-C simple url parser
 
-Simple way to grab a text file with search engine like bing results, and filter only urls, http and https ones.
+Simple way to grab results from bing yahoo and google and filter urls into a log file.
 
 
