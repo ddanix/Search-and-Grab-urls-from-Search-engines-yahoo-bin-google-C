@@ -1,4 +1,4 @@
-dummy_grab_results and parse urls to log file in c lang
+Grab results and filters urls to log file in c lang
 
 
 Simple way to grab results connecting with a http proxy from bing yahoo and google and filter urls into a log file.
