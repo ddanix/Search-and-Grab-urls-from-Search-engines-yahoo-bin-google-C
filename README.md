@@ -1,8 +1,11 @@
-Grab results and filters urls to log file in c lang
+Code sucks but works,
 
+search.c:
 
-Simple way to grab results connecting with a http proxy from bing yahoo and google and filter urls into a log file.
+uses a proxy to grab search results from bing yahoo and google and save html data into a log file.
 
-Urls fetched are just basename, no path implemented.
+filter.c:
+
+filters from log file created by search only the urls of the search.
 
 
