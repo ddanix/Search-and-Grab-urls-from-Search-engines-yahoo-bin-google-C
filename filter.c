@@ -38,7 +38,7 @@ int total_urlss=0;
 void filter(char *log){
   char *str;
   char *p;
-  int x,i,j,start,starts,end,ends;
+  int x,i,start,starts,end,ends;
   int jumper;
   int http[LIMIT];
   int e_http[LIMIT];
@@ -46,13 +46,13 @@ void filter(char *log){
   int e_https[LIMIT];
   char urls[LIMIT][SIZEL];
   char urlss[LIMIT][SIZEL];
-  int eng;
-  
-
-  
 
 
-  char copy;
+
+
+
+
+  char copy='X';
   int urlsi=0;
   int urlssi=0;
   //reset all arrays
@@ -63,15 +63,15 @@ void filter(char *log){
   memset(&e_http[0], '\0', sizeof(e_http));
   memset(&https[0], '\0', sizeof(https));
   memset(&e_https[0], '\0', sizeof(e_https));
- 
+
   printf("Log file imported , cleaning newlines and starting indexing of start and end of urls\n");
   str=log;
-  
+
   while((p=strpbrk(str,"\n"))!=NULL) *p=' ';
 
 
   start=0; starts=0;
-  
+
   for (i = 0 ; i < strlen(str); i++)
    {
      if ( str[i] == 'u' && str[i+1] == 'r' && str[i+2] == 'l' && str[i+3] == '?' && str[i+4] == 'q' && str[i+5] == '='  && str[i+6] == 'h' && str[i+7] == 't'
@@ -85,7 +85,7 @@ void filter(char *log){
 	    {
 		// href="http  -1=" -2== -3=f -4=e -5=r -6=h
 		if ( str[i-1] == '"' && str[i-2] == '=' && str[i-3] == 'f' && str[i-4] == 'e' && str[i-5] == 'r' && str[i-6] == 'h') http[start++]=i;
-		}	
+		}
 		//url?q=https://   href="/url?q=https:// Google Style
 	 if ( str[i] == 'u' && str[i+1] == 'r' && str[i+2] == 'l' && str[i+3] == '?' && str[i+4] == 'q' && str[i+5] == '='  && str[i+6] == 'h' && str[i+7] == 't'
 	     && str[i+8] == 't' && str[i+9] == 'p' && str[i+10] == 's' && str[i+11] == ':' && str[i+12] == '/' && str[i+13] == '/')
@@ -96,46 +96,46 @@ void filter(char *log){
 	 if ( str[i] == 'h' && str[i+1] == 't' && str[i+2] == 't' && str[i+3] == 'p' && str[i+4] == 's' && str[i+5] == ':' && str[i+6] == '/' && str[i+7] == '/')
 	    {
 		if ( str[i-1] == '"' && str[i-2] == '=' && str[i-3] == 'f' && str[i-4] == 'e' && str[i-5] == 'r' && str[i-6] == 'h')https[starts++]=i;
-		}	
+		}
    }
- 
-  
- 
- 
+
+
+
+
   end=0;ends=0;
 
- 
-  
+
+
   for (x = 0 ; x < start ; x++)
    {
 
 	for(jumper=http[x]+7 ; jumper < strlen(str) ; jumper++)
 	 {
-	 if (str[jumper] == '/' ) 
-	   { 
+	 if (str[jumper] == '/' )
+	   {
 	   e_http[end++]=jumper;break;
 	   }
 
 	 }
    }
-  
-   
+
+
    for (x = 0 ; x < starts ; x++)
    {
-  
+
 	for(jumper=https[x]+8 ; jumper < strlen(str) ; jumper++)
 	 {
-	  if (str[jumper] == '/' ) 
-	   { 
+	  if (str[jumper] == '/' )
+	   {
 	    e_https[ends++]=jumper;break;}
        }
    }
-  
 
 
 
-   
-	urlsi=0;copy=NULL;
+
+
+	urlsi=0;copy='\0';
 
 	for ( x = 0 ; x < start ; x++)
 	   {
@@ -144,28 +144,29 @@ void filter(char *log){
 		urls[urlsi][copy++]=str[jumper];
 		//printf("%c",str[jumper]); // DEBUG
 	    }
-	   //printf("\n"); //DEBUG 	
+	   //printf("\n"); //DEBUG
        urls[urlsi][copy]='\0';
-	   
-		copy=NULL;
+
+		copy='\0';
 		urlsi++;
-   
+
 	   }
-     
-	
+
+
 	for (i = 0 ; i< urlsi ; i++)
 	{
-	  if(urls[i][0] != NULL)	{ 
+	  //if(urls[i][0] != NULL)	{
+      if(urls[i][0] != ' ')	{
 	  //dont print urls of search engines
-	  if( strstr(urls[i],".yahoo") ||  strstr(urls[i],".bing") ||  strstr(urls[i],".microsoft") ||  strstr(urls[i],".google") ||  strstr(urls[i],".youtube") )
+	  if( strstr(urls[i],"yahoo") ||  strstr(urls[i],"bing") ||  strstr(urls[i],"microsoft") ||  strstr(urls[i],"google") ||  strstr(urls[i],"youtube") )
 	  {}
-	  else sprintf(_final_urls[total_urls++],"%s\n",urls[i]); 
+	  else sprintf(_final_urls[total_urls++],"%s\n",urls[i]);
 	  }
-     
+
     }
-	 
-	urlssi=0;copy=NULL;
-	
+
+	urlssi=0;copy='\0';
+
 	for ( x = 0 ; x < starts ; x++)
 	   {
 	    for (jumper = https[x] ; jumper < e_https[x] ; jumper++)
@@ -173,28 +174,29 @@ void filter(char *log){
         urlss[urlssi][copy++]=str[jumper];
 		//printf("%c",str[jumper]); //DEBUG
 		}
-        //printf("\n"); //DEBUG  
+        //printf("\n"); //DEBUG
 		urlss[urlssi][copy]='\0';
-	
-		
-		copy=NULL;
+
+
+		copy='\0';
 		urlssi++;
-    
+
 	   }
-  
+
       for (i = 0 ; i < urlssi ; i++)
 	  {
 	  //printf("%d %s \n",i,urlss[i]);
-      if(urlss[i][0] != NULL)	{  
+	  if(urlss[i][0] != ' ')	{
+    //  if(urlss[i][0] != NULL)	{
 	  //dont print urls of search engines
-	  if( strstr(urls[i],".yahoo") ||  strstr(urls[i],".bing") ||  strstr(urls[i],".microsoft") ||  strstr(urls[i],".google") ||  strstr(urls[i],".youtube") )
+	  if( strstr(urls[i],"yahoo") ||  strstr(urls[i],"bing") ||  strstr(urls[i],"microsoft") ||  strstr(urls[i],"google") ||  strstr(urls[i],"youtube") )
 	  {}
-	  else sprintf(_final_urlss[total_urlss++],"%s\n",urlss[i]); 
+	  else sprintf(_final_urlss[total_urlss++],"%s\n",urlss[i]);
 	   }
 	  }
 	  printf("Total http urls so far = %d \n",total_urls);
 	  printf("Total https urls so far = %d \n",total_urlss);
- 
+
 }
 
 
@@ -204,7 +206,7 @@ void fwrite_urls(){
   int i,j;
   for (i = total_urls; i > 0; i--)
      {
-        if (_final_urls[i - 1] == NULL)
+        if (_final_urls[i - 1] == 'X')
        {
         continue;
        }
@@ -213,22 +215,22 @@ void fwrite_urls(){
       {
         if (strcmp(_final_urls[i - 1], _final_urls[j - 1]) == 0)
         {
-            _final_urls[j - 1][0] = NULL;
+            _final_urls[j - 1][0] = 'X';
         }
       }
     }
-    
+
 	qsort(_final_urls,total_urls,SIZEL,StrCMP);
-	
+
 	for (i = 0 ; i < total_urls ; i++)
 	  {
-       if(_final_urls[i][0] != NULL)	{fprintf(furls,"%s",_final_urls[i]);}
+       if(_final_urls[i][0] != 'X')	{fprintf(furls,"%s",_final_urls[i]);}
 	  }
 	  printf("Added %d http urls\n",total_urls);
 
     for (i = total_urlss; i > 0; i--)
      {
-        if (_final_urlss[i - 1] == NULL)
+        if (_final_urlss[i - 1] == 'X')
        {
         continue;
        }
@@ -237,16 +239,16 @@ void fwrite_urls(){
       {
         if (strcmp(_final_urlss[i - 1], _final_urlss[j - 1]) == 0)
         {
-            _final_urlss[j - 1][0] = NULL;
+            _final_urlss[j - 1][0] = 'X';
         }
       }
     }
-    
+
 	qsort(_final_urlss,total_urlss,SIZEL,StrCMP);
-	
+
 	for (i = 0 ; i < total_urlss ; i++)
 	  {
-       if(_final_urlss[i][0] != NULL)	{fprintf(furls,"%s",_final_urlss[i]);}
+       if(_final_urlss[i][0] != 'X')	{fprintf(furls,"%s",_final_urlss[i]);}
 	  }
 	  printf("Added %d https urls\n",total_urlss);
 
@@ -257,32 +259,6 @@ void fwrite_urls(){
 
 
 
-int which_engine(char *str)
-{
- int i=0;
- int engine=0;
- int ctr0=0;
- int ctr1=0;
- for (i = 0 ; i < strlen(str); i++) 
-   {
-     if ( str[i] == 'h' && str[i+1] == 't' && str[i+2] == 't' && str[i+3] == 'p' && str[i+4] == ':' && str[i+5] == '/'  && str[i+6] == '/')
-	    {
-		// engine yahoo or bing Style
-		if ( str[i-1] == '"' && str[i-2] == '=' && str[i-3] == 'f' && str[i-4] == 'e' && str[i-5] == 'r' && str[i-6] == 'h') {ctr0++;}
-		}
-    if ( str[i] == 'u' && str[i+1] == 'r' && str[i+2] == 'l' && str[i+3] == '?' && str[i+4] == 'q' && str[i+5] == '='  && str[i+6] == 'h' && str[i+7] == 't'
-	     && str[i+8] == 't' && str[i+9] == 'p' && str[i+10] == ':' && str[i+11] == '/' && str[i+12] == '/')
-	    {
-		//<a href="/url?q=   Google Style
-		if ( str[i-1] == '/' && str[i-2] == '"' && str[i-3] == '=' && str[i-4] == 'f' && str[i-5] == 'e' && str[i-6] == 'r' && str[i-7] == 'h') {ctr1++;}
-		}
-    }		
-  printf(" ctr0 = %d  ctr1 = %d \n",ctr0,ctr1);
-  if (ctr0 > ctr1 ) engine=2;
-  else engine=1;
-  
-return engine;
-}
 
 
 
@@ -298,11 +274,11 @@ int main()
   int i,x,j,k;
   int findex;
   int ffindex[FLIMIT];
-  
+
 
   pFile = fopen ("OUT.txt","r");
   furls = fopen ("urls.txt","a+");
-  if (pFile==NULL) {fputs ("File error",stderr); exit (1);}
+  if (pFile==NULL) {fputs ("File error",stderr); exit(1);}
   fseek (pFile , 0 , SEEK_END);
   lSize = ftell (pFile);
   rewind (pFile);
@@ -311,7 +287,7 @@ int main()
     if( lSize > 20000000)
 	{
 	printf("File cant be larger than 20 MegaBytes\n");
-	exit(3);
+	exit(1);
 	}
 
    if ( lSize < 200000)
@@ -340,11 +316,9 @@ int main()
          {
          printf("\nx is %d Will copy fom 0 to %d \n",x,sval);
 	     fseek (pFile , 0 , SEEK_SET);
-         buffer = (char*) malloc (sizeof(char)*sval);
-         if (buffer == NULL) {fputs ("Memory error",stderr); exit (2);}
-             result = fread (buffer,1,sval,pFile);
-         if (result != sval) {fputs ("Reading error",stderr); exit (3);}
-		 str=buffer; 
+         buffer = (char*)malloc(sizeof(char)*sval);
+         result = fread (buffer,1,sval,pFile);
+		 str=buffer;
          filter(str);
 
          }
@@ -352,10 +326,8 @@ int main()
          {
          printf("\nx is %d Will copy from %d to  %d \n",x,ffindex[x-1],ffindex[x]);
 	     fseek (pFile , ffindex[x-1] , SEEK_SET);
-         buffer = (char*) malloc (sizeof(char)*sval);
-         if (buffer == NULL) {fputs ("Memory error",stderr); exit (2);}
-             result = fread (buffer,1,sval,pFile);
-         if (result != sval) {fputs ("Reading error",stderr); exit (3);}
+         buffer = (char*)malloc(sizeof(char)*sval);
+         result = fread (buffer,1,sval,pFile);
 		 str=buffer;
 		 filter(str);
 
@@ -367,14 +339,12 @@ int main()
 	if(spliter == 0)
 	{
 	fseek (pFile , 0 , SEEK_SET);
-	buffer = (char*) malloc (sizeof(char)*lSize);
-	if (buffer == NULL) {fputs ("Memory error",stderr); exit (2);}
-        result = fread (buffer,1,lSize,pFile);
-    if (result != lSize) {fputs ("Reading error",stderr); exit (3);}
+	buffer = (char*)malloc(sizeof(char)*lSize);
+	result = fread (buffer,1,lSize,pFile);
 	str=buffer;
 	filter(str);
 	}
-	
+
     fwrite_urls();
     fclose(pFile);
     fclose(furls);
